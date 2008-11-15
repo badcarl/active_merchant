@@ -167,7 +167,7 @@ module ActiveMerchant #:nodoc:
       # Older documentation calls this a subscription
       #
       # The profile id is returned in the response.params['subscriptionID']
-      # The order_id of the authorization will be used unless overridden with :order_id in options
+      # The order_id of the authorization will be used unless overridden with another :order_id in options
       def create_profile_with_authorization(authorization, options = {})
         commit(build_create_profile_with_authorization_request(authorization, options), options)
       end
@@ -176,17 +176,24 @@ module ActiveMerchant #:nodoc:
       # Older documentation calls this a subscription
       #
       # The profile id is returned in the response.params['subscriptionID']
+      # You must supply an :order_id in the options hash
       def create_profile(creditcard, options)
         requires!(options, :order_id, :email)
         setup_address_hash(options)
         commit(build_create_profile_request(creditcard, options), options)
       end
 
+      # Request an authorization with a profile_id
+      #
+      # You must supply an :order_id in the options hash
       def authorize_with_profile(money, profile_id, options = {})
         requires!(options, :order_id)
         commit(build_authorize_with_profile_request(money, profile_id, options), options)
       end
 
+      # Perform an authorization followed by a capture using a proflie
+      #
+      # You must supply an :order_id in the options hash
       def purchase_with_profile(money, profile_id, options = {})
         requires!(options, :order_id)
         commit(build_purchase_with_profile_request(money, profile_id, options), options)
