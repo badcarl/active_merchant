@@ -1,5 +1,6 @@
 = ActiveMerchant CHANGELOG
 
+* Added simple subscription usage to the Cybersource Gateway [Carl Porth]
 * Don't directly use the inflector in the action view helper [cody]
 * Work around Rails Inflector change [cody]
 * Add configurable timeouts to PostsData [Michael Koziarski]
