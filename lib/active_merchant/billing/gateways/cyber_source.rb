@@ -187,7 +187,7 @@ module ActiveMerchant #:nodoc:
       #
       # You must supply an :order_id in the options hash
       def authorize_with_profile(money, profile_id, options = {})
-        requires!(options, :order_id)
+        requires!(options, :order_id, :email)
         commit(build_authorize_with_profile_request(money, profile_id, options), options)
       end
 
@@ -195,7 +195,7 @@ module ActiveMerchant #:nodoc:
       #
       # You must supply an :order_id in the options hash
       def purchase_with_profile(money, profile_id, options = {})
-        requires!(options, :order_id)
+        requires!(options, :order_id, :email)
         commit(build_purchase_with_profile_request(money, profile_id, options), options)
       end
 

@@ -171,7 +171,7 @@ class RemoteCyberSourceTest < Test::Unit::TestCase
     assert response.test?
 
     profile_id = response.params['subscriptionID']
-    options = { :order_id => generate_unique_id }
+    options = { :order_id => generate_unique_id, :email => @options[:email] }
     assert response = @gateway.authorize_with_profile(@amount, profile_id, options)
     assert_success response
     assert_equal 'Successful transaction', response.message
@@ -187,7 +187,7 @@ class RemoteCyberSourceTest < Test::Unit::TestCase
     assert response.test?
 
     profile_id = response.params['subscriptionID']
-    options = { :order_id => generate_unique_id }
+    options = { :order_id => generate_unique_id, :email => @options[:email] }
     assert response = @gateway.purchase_with_profile(@amount, profile_id, options)
     assert_success response
     assert_equal 'Successful transaction', response.message

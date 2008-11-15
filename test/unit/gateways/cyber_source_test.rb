@@ -163,7 +163,7 @@ class CyberSourceTest < Test::Unit::TestCase
     assert_not_nil response.params['subscriptionID']
 
     profile_id = response.params['subscriptionID']
-    options = { :order_id => '1000' }
+    options = { :order_id => '1000', :email => @options[:email] }
     assert response = @gateway.authorize_with_profile(@amount, profile_id, options)
     assert response.success?
     assert response.test?
@@ -177,7 +177,7 @@ class CyberSourceTest < Test::Unit::TestCase
     assert_not_nil response.params['subscriptionID']
 
     profile_id = response.params['subscriptionID']
-    options = { :order_id => '1000' }
+    options = { :order_id => '1000', :email => @options[:email] }
     assert response = @gateway.purchase_with_profile(@amount, profile_id, options)
     assert response.success?
     assert response.test?
