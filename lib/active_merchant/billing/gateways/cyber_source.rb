@@ -163,6 +163,15 @@ module ActiveMerchant #:nodoc:
         commit(build_tax_calculation_request(creditcard, options), options)	  
       end
       
+      # Create a customer profile with a previously requested authorization
+      # Older documentation calls this a subscription
+      #
+      # The profile id is returned in the response.params['subscriptionID']
+      # The order_id of the authorization will be used unless overridden with :order_id in options
+      def create_profile_with_authorization(authorization, options = {})
+        commit(build_create_profile_with_authorization_request(authorization, options), options)
+      end
+
       private                       
       # Create all address hash key value pairs so that we still function if we were only provided with one or two of them 
       def setup_address_hash(options)
@@ -229,6 +238,17 @@ module ActiveMerchant #:nodoc:
         add_purchase_data(xml, money, true, options)
         add_credit_service(xml, request_id, request_token)
         
+        xml.target!
+      end
+
+      def build_create_profile_with_authorization_request(authorization, options)
+        order_id, request_id, request_token = authorization.split(";")
+        options[:order_id] = order_id if options[:order_id].blank?
+        options[:frequency] = 'on-demand'
+
+        xml = Builder::XmlMarkup.new :indent => 2
+        add_recurring_subscription_info(xml, options)
+        add_create_subscription_service(xml, request_id, request_token)
         xml.target!
       end
 
@@ -324,6 +344,19 @@ module ActiveMerchant #:nodoc:
         xml.tag! 'ccCreditService', {'run' => 'true'} do
           xml.tag! 'captureRequestID', request_id
           xml.tag! 'captureRequestToken', request_token
+        end
+      end
+
+      def add_recurring_subscription_info(xml, options = {})
+        xml.tag! 'recurringSubscriptionInfo' do
+          xml.tag!('frequency', options[:frequency]) unless options[:frequency].blank?
+        end
+      end
+
+      def add_create_subscription_service(xml, request_id, request_token)
+        xml.tag! 'paySubscriptionCreateService', {'run' => 'true'} do
+          xml.tag! 'paymentRequestID', request_id
+          xml.tag! 'paymentRequestToken', request_token
         end
       end
 
