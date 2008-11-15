@@ -187,6 +187,11 @@ module ActiveMerchant #:nodoc:
         commit(build_authorize_with_profile_request(money, profile_id, options), options)
       end
 
+      def purchase_with_profile(money, profile_id, options = {})
+        requires!(options, :order_id)
+        commit(build_purchase_with_profile_request(money, profile_id, options), options)
+      end
+
       private                       
       # Create all address hash key value pairs so that we still function if we were only provided with one or two of them 
       def setup_address_hash(options)
@@ -287,6 +292,16 @@ module ActiveMerchant #:nodoc:
         add_purchase_data(xml, money, true, options)
         add_recurring_subscription_info(xml, options)
         add_auth_service(xml)
+        xml.target!
+      end
+
+      def build_purchase_with_profile_request(money, profile_id, options)
+        options[:profile_id] = profile_id
+
+        xml = Builder::XmlMarkup.new :indent => 2
+        add_purchase_data(xml, money, true, options)
+        add_recurring_subscription_info(xml, options)
+        add_purchase_service(xml, options)
         xml.target!
       end
 

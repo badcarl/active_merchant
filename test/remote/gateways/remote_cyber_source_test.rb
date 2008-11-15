@@ -178,4 +178,19 @@ class RemoteCyberSourceTest < Test::Unit::TestCase
     assert response.test?
     assert !response.authorization.blank?
   end
+
+  def test_successful_purchase_with_profile
+    assert response = @gateway.create_profile(@credit_card, @options)
+    assert_success response
+    assert_equal 'Successful transaction', response.message
+    assert !response.params['subscriptionID'].blank?
+    assert response.test?
+
+    profile_id = response.params['subscriptionID']
+    options = { :order_id => generate_unique_id }
+    assert response = @gateway.purchase_with_profile(@amount, profile_id, options)
+    assert_success response
+    assert_equal 'Successful transaction', response.message
+    assert response.test?
+  end
 end
