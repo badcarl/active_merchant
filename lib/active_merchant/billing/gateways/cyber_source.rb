@@ -172,6 +172,16 @@ module ActiveMerchant #:nodoc:
         commit(build_create_profile_with_authorization_request(authorization, options), options)
       end
 
+      # Create a customer profile with a credit card
+      # Older documentation calls this a subscription
+      #
+      # The profile id is returned in the response.params['subscriptionID']
+      def create_profile(creditcard, options)
+        requires!(options, :order_id, :email)
+        setup_address_hash(options)
+        commit(build_create_profile_request(creditcard, options), options)
+      end
+
       private                       
       # Create all address hash key value pairs so that we still function if we were only provided with one or two of them 
       def setup_address_hash(options)
@@ -249,6 +259,19 @@ module ActiveMerchant #:nodoc:
         xml = Builder::XmlMarkup.new :indent => 2
         add_recurring_subscription_info(xml, options)
         add_create_subscription_service(xml, request_id, request_token)
+        xml.target!
+      end
+
+      def build_create_profile_request(creditcard, options)
+        options[:frequency] = 'on-demand'
+
+        xml = Builder::XmlMarkup.new :indent => 2
+        add_address(xml, creditcard, options[:billing_address], options)
+        add_purchase_data(xml, 0, true, options)
+        add_creditcard(xml, creditcard)
+        add_recurring_subscription_info(xml, options)
+        add_create_subscription_service(xml)
+        add_business_rules_data(xml)
         xml.target!
       end
 
@@ -353,10 +376,10 @@ module ActiveMerchant #:nodoc:
         end
       end
 
-      def add_create_subscription_service(xml, request_id, request_token)
+      def add_create_subscription_service(xml, request_id = nil, request_token = nil)
         xml.tag! 'paySubscriptionCreateService', {'run' => 'true'} do
-          xml.tag! 'paymentRequestID', request_id
-          xml.tag! 'paymentRequestToken', request_token
+          xml.tag! 'paymentRequestID', request_id if request_id
+          xml.tag! 'paymentRequestToken', request_token if request_token
         end
       end
 

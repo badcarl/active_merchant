@@ -147,6 +147,14 @@ class CyberSourceTest < Test::Unit::TestCase
     assert_not_nil response_create_profile.params['subscriptionID']
   end
 
+  def test_successful_create_profile_request
+    @gateway.stubs(:ssl_post).returns(successful_create_profile_response)
+    assert response = @gateway.create_profile(@credit_card, @options)
+    assert response.success?
+    assert response.test?
+    assert_not_nil response.params['subscriptionID']
+  end
+
   private
   
   def successful_purchase_response
@@ -201,6 +209,14 @@ class CyberSourceTest < Test::Unit::TestCase
 <?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
 <soap:Header>
 <wsse:Security xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd"><wsu:Timestamp xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" wsu:Id="Timestamp-30895355"><wsu:Created>2008-11-15T05:25:00.655Z</wsu:Created></wsu:Timestamp></wsse:Security></soap:Header><soap:Body><c:replyMessage xmlns:c="urn:schemas-cybersource-com:transaction-data-1.32"><c:merchantReferenceCode>2295211e0fd1e118d439439ac003cda6</c:merchantReferenceCode><c:requestID>2267267005530008402433</c:requestID><c:decision>ACCEPT</c:decision><c:reasonCode>100</c:reasonCode><c:requestToken>Ahj77wSP66KaBCLvDOgEUTYwOFE/wCmxgcKKBdIAQP8Ml0F7zmz+TQJx/XRTK7Uzm90AgAAA5w9p</c:requestToken><c:paySubscriptionCreateReply><c:reasonCode>100</c:reasonCode><c:subscriptionID>2267267005530008402433</c:subscriptionID></c:paySubscriptionCreateReply></c:replyMessage></soap:Body></soap:Envelope>
+    XML
+  end
+
+  def successful_create_profile_response
+    <<-XML
+<?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+<soap:Header>
+<wsse:Security xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd"><wsu:Timestamp xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" wsu:Id="Timestamp-24333190"><wsu:Created>2008-11-15T07:11:27.245Z</wsu:Created></wsu:Timestamp></wsse:Security></soap:Header><soap:Body><c:replyMessage xmlns:c="urn:schemas-cybersource-com:transaction-data-1.32"><c:merchantReferenceCode>c60de841178adf17790541575d4fec70</c:merchantReferenceCode><c:requestID>2267330871370008402434</c:requestID><c:decision>ACCEPT</c:decision><c:reasonCode>100</c:reasonCode><c:requestToken>AhjzbwSP66YlmrV4+mgIUAU2xTvSy3pACB/hkugvec2fyYBMzD01</c:requestToken><c:paySubscriptionCreateReply><c:reasonCode>100</c:reasonCode><c:subscriptionID>2267330871370008402434</c:subscriptionID></c:paySubscriptionCreateReply></c:replyMessage></soap:Body></soap:Envelope>
     XML
   end
 

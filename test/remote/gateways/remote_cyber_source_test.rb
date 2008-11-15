@@ -154,4 +154,12 @@ class RemoteCyberSourceTest < Test::Unit::TestCase
     assert_not_nil response.params['subscriptionID']
     assert response.test?
   end
+
+  def test_successful_create_profile
+    assert response = @gateway.create_profile(@credit_card, @options)
+    assert_success response
+    assert_equal 'Successful transaction', response.message
+    assert_not_nil response.params['subscriptionID']
+    assert response.test?
+  end
 end
