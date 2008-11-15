@@ -155,6 +155,20 @@ class CyberSourceTest < Test::Unit::TestCase
     assert_not_nil response.params['subscriptionID']
   end
 
+  def test_successful_authorization_with_profile_request
+    @gateway.stubs(:ssl_post).returns(successful_create_profile_response, successful_authorization_with_profile_response)
+    assert response = @gateway.create_profile(@credit_card, @options)
+    assert response.success?
+    assert response.test?
+    assert_not_nil response.params['subscriptionID']
+
+    profile_id = response.params['subscriptionID']
+    options = { :order_id => '1000' }
+    assert response = @gateway.authorize_with_profile(@amount, profile_id, options)
+    assert response.success?
+    assert response.test?
+  end
+
   private
   
   def successful_purchase_response
@@ -217,6 +231,14 @@ class CyberSourceTest < Test::Unit::TestCase
 <?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
 <soap:Header>
 <wsse:Security xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd"><wsu:Timestamp xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" wsu:Id="Timestamp-24333190"><wsu:Created>2008-11-15T07:11:27.245Z</wsu:Created></wsu:Timestamp></wsse:Security></soap:Header><soap:Body><c:replyMessage xmlns:c="urn:schemas-cybersource-com:transaction-data-1.32"><c:merchantReferenceCode>c60de841178adf17790541575d4fec70</c:merchantReferenceCode><c:requestID>2267330871370008402434</c:requestID><c:decision>ACCEPT</c:decision><c:reasonCode>100</c:reasonCode><c:requestToken>AhjzbwSP66YlmrV4+mgIUAU2xTvSy3pACB/hkugvec2fyYBMzD01</c:requestToken><c:paySubscriptionCreateReply><c:reasonCode>100</c:reasonCode><c:subscriptionID>2267330871370008402434</c:subscriptionID></c:paySubscriptionCreateReply></c:replyMessage></soap:Body></soap:Envelope>
+    XML
+  end
+
+  def successful_authorization_with_profile_response
+    <<-XML
+<?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+<soap:Header>
+<wsse:Security xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd"><wsu:Timestamp xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" wsu:Id="Timestamp-4370442"><wsu:Created>2008-11-15T07:44:47.943Z</wsu:Created></wsu:Timestamp></wsse:Security></soap:Header><soap:Body><c:replyMessage xmlns:c="urn:schemas-cybersource-com:transaction-data-1.32"><c:merchantReferenceCode>2dc190735568cd7e7744855cd09b67f0</c:merchantReferenceCode><c:requestID>2267350877380008401927</c:requestID><c:decision>ACCEPT</c:decision><c:reasonCode>100</c:reasonCode><c:requestToken>Ahj77wSP66dB6CY2q3AcUTZ6uh4WICmz1dDwsdID5IH+GS6C95zZ/JoE4/rp0HoJjarcBwAAqybv</c:requestToken><c:purchaseTotals><c:currency>USD</c:currency></c:purchaseTotals><c:ccAuthReply><c:reasonCode>100</c:reasonCode><c:amount>1.00</c:amount><c:authorizationCode>123456</c:authorizationCode><c:avsCode>Y</c:avsCode><c:avsCodeRaw>Y</c:avsCodeRaw><c:authorizedDateTime>2008-11-15T07:44:47Z</c:authorizedDateTime><c:processorResponse>00</c:processorResponse></c:ccAuthReply></c:replyMessage></soap:Body></soap:Envelope>
     XML
   end
 
